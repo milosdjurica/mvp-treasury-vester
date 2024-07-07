@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {TreasuryVester} from "../src/TreasuryVester.sol";
-import {MockUNI} from "./mocks/MockUNI.sol";
+import {TreasuryVester} from "../../src/TreasuryVester.sol";
+import {MockUNI} from "../mocks/MockUNI.sol";
 
-contract TreasuryVesterTests is Test {
+contract TreasuryVesterUnitTests is Test {
     TreasuryVester public treasuryVester;
     MockUNI uni;
     address uniAddress;
