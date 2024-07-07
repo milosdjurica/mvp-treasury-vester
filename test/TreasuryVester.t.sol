@@ -3,11 +3,11 @@ pragma solidity ^0.8.0;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {TreasuryVester} from "../src/TreasuryVester.sol";
-import {MockERC20} from "forge-std/mocks/MockERC20.sol";
+import {MockUNI} from "./mocks/MockUNI.sol";
 
 contract TreasuryVesterTests is Test {
     TreasuryVester public treasuryVester;
-    MockERC20 uni;
+    MockUNI uni;
     address uniAddress;
 
     address user = makeAddr("user");
@@ -25,7 +25,7 @@ contract TreasuryVesterTests is Test {
         vestingCliff = vestingBegin + ONE_HOUR;
         vestingEnd = vestingCliff + ONE_HOUR;
 
-        uni = new MockERC20();
+        uni = new MockUNI();
         uniAddress = address(uni);
 
         treasuryVester =
@@ -38,7 +38,7 @@ contract TreasuryVesterTests is Test {
         // );
         // console2.log(treasuryVester);
 
-        // uni.mint(address(treasuryVester), vestingAmount);
+        uni.mint(address(treasuryVester), vestingAmount);
     }
 
     function test_constructor_InitsSuccessfully() public view {
@@ -84,5 +84,28 @@ contract TreasuryVesterTests is Test {
     function test_claim_RevertIf_NotTimeYet() public {
         vm.expectRevert("TreasuryVester::claim: not time yet");
         treasuryVester.claim();
+    }
+
+    function test_claim_PartialClaimsSuccess() public {
+        vm.warp(vestingBegin + (vestingEnd - vestingBegin) / 2);
+        uint256 expectedAmount = vestingAmount / 2;
+
+        vm.prank(recipient);
+        treasuryVester.claim();
+
+        uint256 recipientBalance = uni.balanceOf(recipient);
+        uint256 lastUpdate = treasuryVester.lastUpdate();
+
+        assertEq(recipientBalance, expectedAmount);
+        assertEq(lastUpdate, block.timestamp);
+    }
+
+    function test_claim_FullClaimSuccess() public {
+        vm.warp(vestingEnd + 1);
+        vm.prank(recipient);
+        treasuryVester.claim();
+
+        uint256 recipientBalance = uni.balanceOf(recipient);
+        assertEq(recipientBalance, vestingAmount);
     }
 }
