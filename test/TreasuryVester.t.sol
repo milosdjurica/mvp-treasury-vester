@@ -3,12 +3,15 @@ pragma solidity ^0.8.0;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {TreasuryVester} from "../src/TreasuryVester.sol";
+import {MockERC20} from "forge-std/mocks/MockERC20.sol";
 
 contract TreasuryVesterTests is Test {
     TreasuryVester public treasuryVester;
+    MockERC20 uni;
+    address uniAddress;
+
     address user = makeAddr("user");
 
-    address uni = makeAddr("uni");
     address recipient = makeAddr("recipient");
     uint256 vestingAmount = 1 ether;
     uint256 vestingBegin;
@@ -22,7 +25,11 @@ contract TreasuryVesterTests is Test {
         vestingCliff = vestingBegin + ONE_HOUR;
         vestingEnd = vestingCliff + ONE_HOUR;
 
-        treasuryVester = new TreasuryVester(uni, recipient, vestingAmount, vestingBegin, vestingCliff, vestingEnd);
+        uni = new MockERC20();
+        uniAddress = address(uni);
+
+        treasuryVester =
+            new TreasuryVester(uniAddress, recipient, vestingAmount, vestingBegin, vestingCliff, vestingEnd);
         // treasuryVester = TreasuryVester(
         //     deployCode(
         //         "TreasuryVester.sol:TreasuryVester",
@@ -30,10 +37,12 @@ contract TreasuryVesterTests is Test {
         //     )
         // );
         // console2.log(treasuryVester);
+
+        // uni.mint(address(treasuryVester), vestingAmount);
     }
 
     function test_constructor_InitsSuccessfully() public view {
-        assertEq(treasuryVester.uni(), uni);
+        assertEq(treasuryVester.uni(), uniAddress);
         assertEq(treasuryVester.recipient(), recipient);
 
         assertEq(treasuryVester.vestingAmount(), vestingAmount);
@@ -45,18 +54,18 @@ contract TreasuryVesterTests is Test {
 
     function test_constructor_RevertIf_VestingBeginTooEarly() public {
         vm.expectRevert("TreasuryVester::constructor: vesting begin too early");
-        new TreasuryVester(uni, recipient, vestingAmount, 0, vestingCliff, vestingEnd);
+        new TreasuryVester(uniAddress, recipient, vestingAmount, 0, vestingCliff, vestingEnd);
     }
 
     function test_constructor_RevertIf_CliffIsTooEarly() public {
         vm.expectRevert("TreasuryVester::constructor: cliff is too early");
 
-        new TreasuryVester(uni, recipient, vestingAmount, vestingBegin, vestingBegin - 1, vestingEnd);
+        new TreasuryVester(uniAddress, recipient, vestingAmount, vestingBegin, vestingBegin - 1, vestingEnd);
     }
 
     function test_constructor_RevertIf_EndIsTooEarly() public {
         vm.expectRevert("TreasuryVester::constructor: end is too early");
-        new TreasuryVester(uni, recipient, vestingAmount, vestingBegin, vestingCliff, vestingCliff);
+        new TreasuryVester(uniAddress, recipient, vestingAmount, vestingBegin, vestingCliff, vestingCliff);
     }
 
     function test_setRecipient_RevertIf_CalledByNonRecipient() public {
@@ -64,7 +73,7 @@ contract TreasuryVesterTests is Test {
         treasuryVester.setRecipient(user);
     }
 
-    // ! Not sure if this is intention, but anyone can set themselves to be recipient ???
+    // ! Not sure if this is intended, but anyone can set themselves to be recipient ???
     function test_setRecipient_ChangesSuccessfully() public {
         vm.prank(user);
         treasuryVester.setRecipient(user);
