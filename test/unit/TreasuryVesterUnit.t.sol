@@ -18,7 +18,7 @@ contract TreasuryVesterUnitTests is Test {
     uint256 vestingCliff;
     uint256 vestingEnd;
 
-    uint256 constant ONE_HOUR = 60 * 60 * 60;
+    uint256 constant ONE_HOUR = 60 * 60;
 
     function setUp() public {
         vestingBegin = block.timestamp + 1;
