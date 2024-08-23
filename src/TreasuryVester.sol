@@ -38,7 +38,10 @@ contract TreasuryVester {
     }
 
     function setRecipient(address recipient_) public {
+        // ! OLD VERSION
+        // require(msg.sender == recipient_, "TreasuryVester::setRecipient: unauthorized");
         require(msg.sender == recipient, "TreasuryVester::setRecipient: unauthorized");
+        require(recipient_ != address(0), "TreasuryVester::setRecipient: zero address");
         recipient = recipient_;
     }
 

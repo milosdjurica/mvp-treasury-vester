@@ -68,18 +68,36 @@ contract TreasuryVesterUnitTests is Test {
         new TreasuryVester(uniAddress, recipient, vestingAmount, vestingBegin, vestingCliff, vestingCliff);
     }
 
-    function test_setRecipient_RevertIf_CalledByNonRecipient() public {
+    function test_setRecipient_RevertIf_CalledByNonRecipient_FIXED() public {
         vm.expectRevert("TreasuryVester::setRecipient: unauthorized");
         treasuryVester.setRecipient(user);
     }
 
-    // ! Not sure if this is intended, but anyone can set themselves to be recipient ???
-    function test_setRecipient_ChangesSuccessfully() public {
-        vm.prank(user);
-        treasuryVester.setRecipient(user);
+    function test_setRecipient_RevertIf_AddressZero_FIXED() public {
+        vm.prank(treasuryVester.recipient());
+        vm.expectRevert("TreasuryVester::setRecipient: zero address");
+        treasuryVester.setRecipient(address(0));
+    }
 
+    function test_setRecipient_ChangesSuccessfully_FIXED() public {
+        vm.prank(treasuryVester.recipient());
+        treasuryVester.setRecipient(user);
         assertEq(treasuryVester.recipient(), user);
     }
+
+    // ! Those commented tests are created for old version of setRecipient
+    // ! Not sure if this is intended, but anyone can set themselves to be recipient ???
+    // function test_setRecipient_ChangesSuccessfully() public {
+    //     vm.prank(user);
+    //     treasuryVester.setRecipient(user);
+
+    //     assertEq(treasuryVester.recipient(), user);
+    // }
+
+    // function test_setRecipient_RevertIf_CalledByNonRecipient() public {
+    //     vm.expectRevert("TreasuryVester::setRecipient: unauthorized");
+    //     treasuryVester.setRecipient(user);
+    // }
 
     function test_claim_RevertIf_NotTimeYet() public {
         vm.expectRevert("TreasuryVester::claim: not time yet");

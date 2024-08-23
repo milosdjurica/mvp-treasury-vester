@@ -54,8 +54,15 @@ contract TreasuryVesterFuzzTests is Test {
         assertEq(vesterFuzz.vestingEnd(), end);
     }
 
+    // ! Test for OLD version
+    // function testFuzz_setRecipient_Changes(address newRecipient) public {
+    //     vm.prank(newRecipient);
+    //     treasuryVester.setRecipient(newRecipient);
+    //     assertEq(treasuryVester.recipient(), newRecipient);
+    // }
+
     function testFuzz_setRecipient_Changes(address newRecipient) public {
-        vm.prank(newRecipient);
+        vm.prank(treasuryVester.recipient());
         treasuryVester.setRecipient(newRecipient);
         assertEq(treasuryVester.recipient(), newRecipient);
     }

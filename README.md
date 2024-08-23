@@ -15,7 +15,7 @@ forge install
 
 # Important Security Fix
 
-1. Critical error in `setRecipient()` function. In the current implementation everyone is allowed to make themselves a recipient. This is probably not desired behavior. Probably should be changed so that only the previous recipient can give this role to someone else.
+1. Critical error in `setRecipient()` function. In the old implementation everyone is allowed to make themselves a recipient. This is probably not desired behavior. I changed the code so that only the previous recipient can give this role to someone else.
 
 ```javascript
     function setRecipient(address recipient_) public {
@@ -25,7 +25,7 @@ forge install
 
 ```
 
-Required change ->
+Change made ->
 
 ```diff
     function setRecipient(address recipient_) public {
@@ -36,7 +36,7 @@ Required change ->
 
 ```
 
-2. Also, probably should do a check if new `recipient_` is address(0).
+2. Also, I added a check to see if new `recipient_` is address(0).
 
 ```diff
     function setRecipient(address recipient_) public {
