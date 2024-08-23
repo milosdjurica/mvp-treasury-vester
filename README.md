@@ -1,66 +1,87 @@
-## Foundry
+# Installation
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+1. Clone the repository
 
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+git clone https://github.com/milosdjurica/mvp-treasury-vester
+cd mvp-treasury-vester
 ```
 
-### Test
+2. Install dependencies
 
-```shell
-$ forge test
+```bash
+forge install
 ```
 
-### Format
+# Important Security Fix
 
-```shell
-$ forge fmt
+1. Critical error in `setRecipient()` function. In the current implementation everyone is allowed to make themselves a recipient. This is probably not desired behavior. Probably should be changed so that only the previous recipient can give this role to someone else.
+
+```javascript
+    function setRecipient(address recipient_) public {
+        require(msg.sender == recipient_, "TreasuryVester::setRecipient: unauthorized");
+        recipient = recipient_;
+    }
+
 ```
 
-### Gas Snapshots
+Required change ->
 
-```shell
-$ forge snapshot
+```diff
+    function setRecipient(address recipient_) public {
+-       require(msg.sender == recipient_, "TreasuryVester::setRecipient: unauthorized");
++       require(msg.sender == recipient, "TreasuryVester::setRecipient: unauthorized");
+        recipient = recipient_;
+    }
+
 ```
 
-### Anvil
+2. Also, probably should do a check if new `recipient_` is address(0).
 
-```shell
-$ anvil
+```diff
+    function setRecipient(address recipient_) public {
+-       require(msg.sender == recipient_, "TreasuryVester::setRecipient: unauthorized");
++       require(msg.sender == recipient, "TreasuryVester::setRecipient: unauthorized");
++       require(recipient_ != address(0), "TreasuryVester::setRecipient: address zero");
+        recipient = recipient_;
+    }
+
 ```
 
-### Deploy
+# Tests & Coverage
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+## Testing
+
+1. Run tests
+
+```sh
+forge test
 ```
 
-### Cast
+2. Run only Unit tests
 
-```shell
-$ cast <subcommand>
+```sh
+forge test --mc Unit
 ```
 
-### Help
+3. Run only Fuzz tests
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```sh
+forge test --mc Fuzz
 ```
+
+4. Run tests with more details (logs and traces) -> [Foundry Docs][Foundry-logs-docs-url]
+
+```sh
+forge test -vvv
+```
+
+## Coverage
+
+1. See coverage
+
+```sh
+forge coverage
+```
+
+[Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
