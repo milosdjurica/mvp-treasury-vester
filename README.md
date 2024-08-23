@@ -36,7 +36,7 @@ Change made ->
 
 ```
 
-2. Also, I added a check to see if new `recipient_` is address(0).
+2. Also, I added a check to see if new `recipient_` is `address(0)`.
 
 ```diff
     function setRecipient(address recipient_) public {
@@ -80,13 +80,15 @@ forge test -vvv
 
 1. See coverage
 
+```sh
+forge coverage
+```
+
 - 10 TreasuryVester Unit Tests
 - 11 SafeMath Harness Unit Tests
 - 4 TreasuryVester Fuzz Tests
 
-```sh
-forge coverage
-```
+![Coverage image][Coverage-image-url]
 
 [Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
 [Coverage-image-url]: https://github.com/milosdjurica/mvp-treasury-vester/blob/main/public/coverage.png
