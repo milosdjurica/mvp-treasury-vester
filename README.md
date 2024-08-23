@@ -90,5 +90,14 @@ forge coverage
 
 ![Coverage image][Coverage-image-url]
 
+# Note
+
+- Version of the `TreasuryVester` contract is changed, because Foundry requires newer version of the contract in order to do testing on it.
+
+```diff
+- pragma solidity ^0.5.16;
++ pragma solidity ^0.8.20;
+```
+
 [Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
 [Coverage-image-url]: https://github.com/milosdjurica/mvp-treasury-vester/blob/main/public/coverage.png
