@@ -80,8 +80,13 @@ forge test -vvv
 
 1. See coverage
 
+- 10 TreasuryVester Unit Tests
+- 11 SafeMath Harness Unit Tests
+- 4 TreasuryVester Fuzz Tests
+
 ```sh
 forge coverage
 ```
 
 [Foundry-logs-docs-url]: https://book.getfoundry.sh/forge/tests?highlight=-vvv#logs-and-traces
+[Coverage-image-url]: https://github.com/milosdjurica/mvp-treasury-vester/blob/main/public/coverage.png
